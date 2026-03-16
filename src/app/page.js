@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Image from "next/image";
 
 export default function Home() {
@@ -10,9 +11,18 @@ export default function Home() {
         <div className="space-x-6">
           <a href="#features" className="hover:text-blue-600">Características</a>
           <a href="#how" className="hover:text-blue-600">Cómo funciona</a>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            Iniciar sesión
-          </button>
+          <Link href="/login" style={{ textDecoration: 'none' }}>
+  <button style={{ 
+    backgroundColor: '#2563eb', // Tu color azul
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer'
+  }}>
+    Iniciar Sesión
+  </button>
+</Link>
         </div>
       </nav>
 
