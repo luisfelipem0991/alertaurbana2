@@ -1,8 +1,18 @@
 "use client";
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
+  const router = useRouter();
+
+  // ✅ ESTADOS (NUEVO)
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const blueDark = "#1e3a8a"; 
   const bluePrimary = "#2563eb"; 
   const blueLight = "#eff6ff";
@@ -16,8 +26,49 @@ export default function RegisterPage() {
     boxSizing: 'border-box',
     outline: 'none',
     fontSize: '16px',
-    color: '#000000', // Texto que escribes en negro
+    color: '#000000',
     transition: '0.3s',
+  };
+
+  // 🔐 REGISTRO (NUEVO)
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    // Validar contraseñas
+    if (password !== confirmPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          confirmPassword,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error);
+        return;
+      }
+
+      alert("Usuario registrado correctamente");
+
+      // 🔥 Redirige al login
+      router.push("/login");
+
+    } catch (error) {
+      alert("Error al registrar");
+    }
   };
 
   return (
@@ -30,7 +81,7 @@ export default function RegisterPage() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       padding: '20px'
     }}>
-      {/* Botón Volver al Inicio */}
+
       <Link href="/" style={{
         position: 'absolute',
         top: '20px',
@@ -42,12 +93,8 @@ export default function RegisterPage() {
         padding: '10px 20px',
         borderRadius: '50px',
         backdropFilter: 'blur(10px)',
-        transition: '0.3s',
         fontWeight: '500'
-      }}
-      onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
-      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
-      >
+      }}>
         ← Volver al Inicio
       </Link>
 
@@ -59,7 +106,7 @@ export default function RegisterPage() {
         width: '100%',
         maxWidth: '420px',
       }}>
-        {/* Encabezado */}
+
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{
             width: '70px',
@@ -80,86 +127,80 @@ export default function RegisterPage() {
           <p style={{ color: '#4b5563', fontSize: '14px', marginTop: '8px' }}>Únete a nuestra plataforma</p>
         </div>
 
-        <form style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        {/* ✅ FORM CON LÓGICA */}
+        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           <style>{`
             input::placeholder { color: #9ca3af; opacity: 1; }
           `}</style>
 
           {/* NOMBRE */}
-          <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '6px' }}>
-              Nombre completo
-            </label>
-            <input type="text" placeholder="Ej: Pepito Pérez" style={inputStyle} 
-              onFocus={(e) => { e.target.style.borderColor = bluePrimary; e.target.style.backgroundColor = 'white'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#f3f4f6'; e.target.style.backgroundColor = '#f9fafb'; }}
+          <div>
+            <label>Nombre completo</label>
+            <input
+              type="text"
+              placeholder="Ej: Pepito Pérez"
+              style={inputStyle}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
-          {/* CORREO */}
-          <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '6px' }}>
-              Correo electrónico
-            </label>
-            <input type="email" placeholder="pepito@ejemplo.com" style={inputStyle}
-              onFocus={(e) => { e.target.style.borderColor = bluePrimary; e.target.style.backgroundColor = 'white'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#f3f4f6'; e.target.style.backgroundColor = '#f9fafb'; }}
+          {/* EMAIL */}
+          <div>
+            <label>Correo electrónico</label>
+            <input
+              type="email"
+              placeholder="pepito@ejemplo.com"
+              style={inputStyle}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
-          {/* CONTRASEÑA */}
-          <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '6px' }}>
-              Contraseña
-            </label>
-            <input type="password" placeholder="Mínimo 8 caracteres" style={inputStyle}
-              onFocus={(e) => { e.target.style.borderColor = bluePrimary; e.target.style.backgroundColor = 'white'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#f3f4f6'; e.target.style.backgroundColor = '#f9fafb'; }}
+          {/* PASSWORD */}
+          <div>
+            <label>Contraseña</label>
+            <input
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              style={inputStyle}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {/* CONFIRMAR CONTRASEÑA */}
-          <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '6px' }}>
-              Confirmar contraseña
-            </label>
-            <input type="password" placeholder="Repite tu contraseña" style={inputStyle}
-              onFocus={(e) => { e.target.style.borderColor = bluePrimary; e.target.style.backgroundColor = 'white'; }}
-              onBlur={(e) => { e.target.style.borderColor = '#f3f4f6'; e.target.style.backgroundColor = '#f9fafb'; }}
+          {/* CONFIRM PASSWORD */}
+          <div>
+            <label>Confirmar contraseña</label>
+            <input
+              type="password"
+              placeholder="Repite tu contraseña"
+              style={inputStyle}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
 
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '15px',
-              backgroundColor: bluePrimary,
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              borderRadius: '14px',
-              border: 'none',
-              cursor: 'pointer',
-              transition: '0.3s',
-              marginTop: '10px',
-              boxShadow: `0 10px 20px -5px rgba(37, 99, 235, 0.4)`
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#1d4ed8'}
-            onMouseOut={(e) => e.target.style.backgroundColor = bluePrimary}
-            onMouseDown={(e) => e.target.style.transform = 'scale(0.97)'}
-            onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
-          >
+          <button type="submit" style={{
+            width: '100%',
+            padding: '15px',
+            backgroundColor: bluePrimary,
+            color: 'white',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            borderRadius: '14px',
+            border: 'none',
+            cursor: 'pointer',
+            marginTop: '10px',
+          }}>
             Registrarse ahora
           </button>
         </form>
 
-        <div style={{ marginTop: '25px', textAlign: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
-          <p style={{ fontSize: '14px', color: '#4b5563' }}>
+        <div style={{ marginTop: '25px', textAlign: 'center' }}>
+          <p>
             ¿Ya tienes una cuenta?{' '}
-            <Link href="/login" style={{ color: bluePrimary, fontWeight: 'bold', textDecoration: 'none' }}>
-              Inicia sesión
-            </Link>
+            <Link href="/login">Inicia sesión</Link>
           </p>
         </div>
       </div>

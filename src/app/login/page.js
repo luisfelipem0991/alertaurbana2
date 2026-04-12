@@ -2,15 +2,20 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
+
+  // ✅ ESTADOS
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const blueDark = "#1e3a8a"; 
   const bluePrimary = "#2563eb"; 
   const blueLight = "#eff6ff";
 
-  // Estilo base para todos los inputs
   const inputStyle = {
     width: '100%',
     padding: '12px 16px',
@@ -20,8 +25,48 @@ export default function LoginPage() {
     boxSizing: 'border-box',
     outline: 'none',
     fontSize: '16px',
-    color: '#000000', // TEXTO QUE ESCRIBES: Negro puro
+    color: '#000000',
     transition: '0.3s',
+  };
+
+  // 🔐 LOGIN
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error);
+        return;
+      }
+
+  localStorage.setItem("token", data.token);
+
+// 🔐 LEER TOKEN
+const payload = JSON.parse(atob(data.token.split(".")[1]));
+
+// 🔥 REDIRECCIÓN SEGÚN ROL
+if (payload.role === "ADMIN" || payload.role === "SUPERADMIN") {
+  router.push("/admin");
+} else {
+  router.push("/huecos");
+}
+
+    } catch (error) {
+      alert("Error al iniciar sesión");
+    }
   };
 
   return (
@@ -34,7 +79,8 @@ export default function LoginPage() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       padding: '20px'
     }}>
-      {/* Botón Volver al Inicio */}
+      
+      {/* Botón Volver */}
       <Link href="/" style={{
         position: 'absolute',
         top: '20px',
@@ -63,6 +109,7 @@ export default function LoginPage() {
         width: '100%',
         maxWidth: '420px',
       }}>
+
         {/* Encabezado */}
         <div style={{ textAlign: 'center', marginBottom: '35px' }}>
           <div style={{
@@ -80,76 +127,60 @@ export default function LoginPage() {
           }}>
             👤
           </div>
-          <h1 style={{ fontSize: '26px', color: '#111827', margin: '0', fontWeight: '800' }}>Área de Usuario</h1>
-          <p style={{ color: '#4b5563', fontSize: '14px', marginTop: '8px' }}>Ingresa tus datos para continuar</p>
+          <h1 style={{ fontSize: '26px', color: '#111827', margin: '0', fontWeight: '800' }}>
+            Área de Usuario
+          </h1>
+          <p style={{ color: '#374151', fontSize: '14px', marginTop: '8px' }}>
+            Ingresa tus datos para continuar
+          </p>
         </div>
 
-        <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* FORM */}
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          {/* CAMPO: NOMBRE DE USUARIO */}
+          {/* NOMBRE */}
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' }}>
+            <label style={{ fontWeight: '700', color: '#111827' }}>
               Nombre completo
             </label>
-            <style>{`
-              input::placeholder { color: #9ca3af; opacity: 1; }
-            `}</style>
             <input
               type="text"
               placeholder="Ej: Pepito Pérez"
               style={inputStyle}
-              onFocus={(e) => {
-                e.target.style.borderColor = bluePrimary;
-                e.target.style.backgroundColor = 'white';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#f3f4f6';
-                e.target.style.backgroundColor = '#f9fafb';
-              }}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
-          {/* CAMPO: CORREO */}
+          {/* EMAIL */}
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' }}>
+            <label style={{ fontWeight: '700', color: '#111827' }}>
               Correo electrónico
             </label>
             <input
               type="email"
               placeholder="pepito@ejemplo.com"
               style={inputStyle}
-              onFocus={(e) => {
-                e.target.style.borderColor = bluePrimary;
-                e.target.style.backgroundColor = 'white';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#f3f4f6';
-                e.target.style.backgroundColor = '#f9fafb';
-              }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
-          {/* CAMPO: CONTRASEÑA */}
+          {/* PASSWORD */}
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '700', color: '#1f2937', marginBottom: '8px' }}>
+            <label style={{ fontWeight: '700', color: '#111827' }}>
               Contraseña
             </label>
             <input
               type="password"
               placeholder="••••••••"
               style={inputStyle}
-              onFocus={(e) => {
-                e.target.style.borderColor = bluePrimary;
-                e.target.style.backgroundColor = 'white';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#f3f4f6';
-                e.target.style.backgroundColor = '#f9fafb';
-              }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {/* BOTÓN DE ACCESO */}
+          {/* BOTÓN */}
           <button
             type="submit"
             style={{
@@ -162,27 +193,24 @@ export default function LoginPage() {
               borderRadius: '14px',
               border: 'none',
               cursor: 'pointer',
-              transition: '0.3s',
               marginTop: '10px',
               boxShadow: `0 10px 20px -5px rgba(37, 99, 235, 0.4)`
             }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#1d4ed8'}
-            onMouseOut={(e) => e.target.style.backgroundColor = bluePrimary}
-            onMouseDown={(e) => e.target.style.transform = 'scale(0.97)'}
-            onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
           >
-            Iniciar Sesion
+            Iniciar Sesión
           </button>
         </form>
 
+        {/* LINK */}
         <div style={{ marginTop: '30px', textAlign: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
-          <p style={{ fontSize: '14px', color: '#4b5563' }}>
+          <p style={{ fontSize: '14px', color: '#374151' }}>
             ¿No tienes una cuenta?{' '}
-            <Link href="/register" style={{ color: bluePrimary, fontWeight: 'bold', textDecoration: 'none' }}>
+            <Link href="/register" style={{ color: bluePrimary, fontWeight: 'bold' }}>
               Regístrate aquí
             </Link>
           </p>
         </div>
+
       </div>
     </main>
   );
