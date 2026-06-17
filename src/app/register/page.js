@@ -15,14 +15,14 @@ export default function RegisterPage() {
 
   const blueDark = "#1e3a8a"; 
   const bluePrimary = "#2563eb"; 
-  const blueLight = "#eff6ff";
+  const blueLight = "#ece5e5";
 
   const inputStyle = {
     width: '100%',
     padding: '12px 16px',
     borderRadius: '14px',
-    border: '2px solid #f3f4f6',
-    backgroundColor: '#f9fafb',
+    border: '2px solid #696a6d',
+    backgroundColor: '#ffffff',
     boxSizing: 'border-box',
     outline: 'none',
     fontSize: '16px',
@@ -130,7 +130,7 @@ export default function RegisterPage() {
         {/* ✅ FORM CON LÓGICA */}
         <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           <style>{`
-            input::placeholder { color: #9ca3af; opacity: 1; }
+            input::placeholder { color: #e3dede; opacity: 1; }
           `}</style>
 
           {/* NOMBRE */}
