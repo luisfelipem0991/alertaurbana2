@@ -16,7 +16,9 @@
     "next": "16.1.6",
     "pg": "^8.20.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-react": "^5.32.8"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
