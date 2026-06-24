@@ -2,11 +2,84 @@ import pool from "@/lib/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Iniciar sesión
+ *     description: Valida las credenciales del usuario y genera un token JWT para acceder a rutas protegidas.
+ *     tags:
+ *       - Autenticación
+ *     requestBody:
+ *       required: true
+ *       description: Credenciales del usuario registrado.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: usuario@alertaurbana.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Inicio de sesión exitoso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login exitoso
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: Juan Pérez
+ *                     role:
+ *                       type: string
+ *                       example: ciudadano
+ *       400:
+ *         description: Credenciales inválidas.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error del servidor
+ */
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
 
-    // Buscar usuario
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1",
       [email]
@@ -18,14 +91,12 @@ export async function POST(req) {
 
     const user = result.rows[0];
 
-    // Validar contraseña
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
       return Response.json({ error: "Contraseña incorrecta" }, { status: 400 });
     }
 
-    // Crear token
     const token = jwt.sign(
       { id: user.id, role: user.role },
       "secreto_super_seguro",
@@ -41,7 +112,6 @@ export async function POST(req) {
         role: user.role
       }
     });
-
   } catch (error) {
     return Response.json({ error: "Error del servidor" }, { status: 500 });
   }
