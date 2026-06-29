@@ -7,6 +7,7 @@ import express from "express";
 import healthRoutes from "./routes/healthRoutes.js";
 import loginRoutes from "./routes/loginRoutes.js";
 import registerRoutes from "./routes/registerRoutes.js";
+import usersRoutes from "./routes/usersRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
 app.use("/", healthRoutes);
 app.use("/api", loginRoutes);
 app.use("/api", registerRoutes);
+app.use("/api", usersRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);

@@ -223,6 +223,29 @@ No se modificaron otros endpoints de autenticación, registro, usuarios, Swagger
 
 Resultado: completada.
 
+### Fase 7 - Migracion paralela de GET /api/users a Express
+
+Objetivo: crear una implementacion equivalente de `GET /api/users` dentro del
+backend Express, manteniendo intacto el endpoint existente de Next.js y sin
+modificar el frontend.
+
+Resultado: completada.
+
+Archivos creados o modificados en `backend/`:
+
+- `src/controllers/usersController.js`
+- `src/routes/usersRoutes.js`
+- `src/server.js`
+
+Cambios realizados:
+
+- Se creo el controlador `getUsers` en `backend/src/controllers/usersController.js`
+  que ejecuta la consulta `SELECT * FROM users ORDER BY created_at DESC`.
+- Se creo la ruta `GET /api/users` mediante `backend/src/routes/usersRoutes.js`.
+- Se registro el router de users bajo `/api` en `backend/src/server.js`.
+- No se modifico `frontend/src/app/api/users/route.js`. El endpoint original de
+  Next.js sigue existiendo.
+
 ## Problemas Encontrados
 
 ### Fase 2
