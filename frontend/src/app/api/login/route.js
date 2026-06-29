@@ -77,7 +77,9 @@ import jwt from "jsonwebtoken";
  *                   example: Error del servidor
  */
 export async function POST(req) {
-  try {
+    console.log("=== LOGIN API EJECUTADA ===");
+
+    try {
     const { email, password } = await req.json();
 
     const result = await pool.query(
@@ -113,6 +115,11 @@ export async function POST(req) {
       }
     });
   } catch (error) {
-    return Response.json({ error: "Error del servidor" }, { status: 500 });
+    console.error(error);
+
+    return Response.json(
+        { error: "Error del servidor" },
+        { status: 500 }
+    );
   }
 }
