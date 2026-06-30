@@ -246,6 +246,55 @@ Cambios realizados:
 - No se modifico `frontend/src/app/api/users/route.js`. El endpoint original de
   Next.js sigue existiendo.
 
+### Fase 8 - Migracion paralela de DELETE /api/users/:id a Express
+
+Objetivo: crear una implementacion equivalente de `DELETE /api/users/:id`
+dentro del backend Express, manteniendo intacto el endpoint existente de
+Next.js y sin modificar el frontend.
+
+Resultado: completada.
+
+Archivos creados o modificados en `backend/`:
+
+- `src/controllers/userByIdController.js`
+- `src/routes/userByIdRoutes.js`
+- `src/server.js`
+
+Cambios realizados:
+
+- Se creo el controlador `deleteUserById` en
+  `backend/src/controllers/userByIdController.js` que ejecuta la consulta
+  `DELETE FROM users WHERE id = $1 RETURNING id`.
+- Se creo la ruta `DELETE /api/users/:id` mediante
+  `backend/src/routes/userByIdRoutes.js`.
+- Se registro el router de borrado bajo `/api` en `backend/src/server.js`.
+- No se modifico `frontend/src/app/api/users/[id]/route.js`. El endpoint
+  original de Next.js sigue existiendo.
+
+### Fase 9 - Migracion paralela de GET /api/swagger a Express
+
+Objetivo: crear una implementacion equivalente de `GET /api/swagger` dentro del
+backend Express, manteniendo intacto el endpoint existente de Next.js y sin
+modificar el frontend.
+
+Resultado: completada.
+
+Archivos creados o modificados en `backend/`:
+
+- `src/controllers/swaggerController.js`
+- `src/routes/swaggerRoutes.js`
+- `src/server.js`
+
+Cambios realizados:
+
+- Se creo el controlador `getSwagger` en
+  `backend/src/controllers/swaggerController.js` que devuelve la misma
+  especificacion Swagger generada por `frontend/src/lib/swagger.js`.
+- Se creo la ruta `GET /api/swagger` mediante `backend/src/routes/swaggerRoutes.js`.
+- Se registro el router de Swagger bajo `/api` en `backend/src/server.js`.
+- No se modifico `frontend/src/app/api/swagger/route.js`. El endpoint original de
+  Next.js sigue existiendo.
+
 ## Problemas Encontrados
 
 ### Fase 2
