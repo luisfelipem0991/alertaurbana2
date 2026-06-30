@@ -1,28 +1,27 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const router = useRouter();
 
-  // ✅ ESTADOS (NUEVO)
+  // ✅ ESTADOS
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const blueDark = "#1e3a8a"; 
   const bluePrimary = "#2563eb"; 
-  const blueLight = "#ece5e5";
+  const blueLight = "#eff6ff";
 
   const inputStyle = {
     width: '100%',
     padding: '12px 16px',
     borderRadius: '14px',
-    border: '2px solid #696a6d',
-    backgroundColor: '#ffffff',
+    border: '2px solid #f3f4f6',
+    backgroundColor: '#f9fafb',
     boxSizing: 'border-box',
     outline: 'none',
     fontSize: '16px',
@@ -30,27 +29,19 @@ export default function RegisterPage() {
     transition: '0.3s',
   };
 
-  // 🔐 REGISTRO (NUEVO)
-  const handleRegister = async (e) => {
+  // 🔐 LOGIN
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Validar contraseñas
-    if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
-
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
           email,
           password,
-          confirmPassword,
         }),
       });
 
@@ -61,13 +52,20 @@ export default function RegisterPage() {
         return;
       }
 
-      alert("Usuario registrado correctamente");
+  localStorage.setItem("token", data.token);
 
-      // 🔥 Redirige al login
-      router.push("/login");
+// 🔐 LEER TOKEN
+const payload = JSON.parse(atob(data.token.split(".")[1]));
+
+// 🔥 REDIRECCIÓN SEGÚN ROL
+if (payload.role === "ADMIN" || payload.role === "SUPERADMIN") {
+  router.push("/admin");
+} else {
+  router.push("/huecos");
+}
 
     } catch (error) {
-      alert("Error al registrar");
+      alert("Error al iniciar sesión");
     }
   };
 
@@ -81,7 +79,8 @@ export default function RegisterPage() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       padding: '20px'
     }}>
-
+      
+      {/* Botón Volver */}
       <Link href="/" style={{
         position: 'absolute',
         top: '20px',
@@ -93,8 +92,12 @@ export default function RegisterPage() {
         padding: '10px 20px',
         borderRadius: '50px',
         backdropFilter: 'blur(10px)',
+        transition: '0.3s',
         fontWeight: '500'
-      }}>
+      }}
+      onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)'}
+      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+      >
         ← Volver al Inicio
       </Link>
 
@@ -107,7 +110,8 @@ export default function RegisterPage() {
         maxWidth: '420px',
       }}>
 
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        {/* Encabezado */}
+        <div style={{ textAlign: 'center', marginBottom: '35px' }}>
           <div style={{
             width: '70px',
             height: '70px',
@@ -119,23 +123,26 @@ export default function RegisterPage() {
             margin: '0 auto 15px',
             border: `2px solid ${bluePrimary}`,
             fontSize: '30px',
-            transform: 'rotate(5deg)'
+            transform: 'rotate(-5deg)'
           }}>
-            📝
+            👤
           </div>
-          <h1 style={{ fontSize: '26px', color: '#111827', margin: '0', fontWeight: '800' }}>Crear Cuenta</h1>
-          <p style={{ color: '#4b5563', fontSize: '14px', marginTop: '8px' }}>Únete a nuestra plataforma</p>
+          <h1 style={{ fontSize: '26px', color: '#111827', margin: '0', fontWeight: '800' }}>
+            Área de Usuario
+          </h1>
+          <p style={{ color: '#374151', fontSize: '14px', marginTop: '8px' }}>
+            Ingresa tus datos para continuar
+          </p>
         </div>
 
-        {/* ✅ FORM CON LÓGICA */}
-        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          <style>{`
-            input::placeholder { color: #e3dede; opacity: 1; }
-          `}</style>
-
+        {/* FORM */}
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
           {/* NOMBRE */}
-          <div>
-            <label>Nombre completo</label>
+          <div style={{ textAlign: 'left' }}>
+            <label style={{ fontWeight: '700', color: '#111827' }}>
+              Nombre completo
+            </label>
             <input
               type="text"
               placeholder="Ej: Pepito Pérez"
@@ -146,8 +153,10 @@ export default function RegisterPage() {
           </div>
 
           {/* EMAIL */}
-          <div>
-            <label>Correo electrónico</label>
+          <div style={{ textAlign: 'left' }}>
+            <label style={{ fontWeight: '700', color: '#111827' }}>
+              Correo electrónico
+            </label>
             <input
               type="email"
               placeholder="pepito@ejemplo.com"
@@ -158,51 +167,50 @@ export default function RegisterPage() {
           </div>
 
           {/* PASSWORD */}
-          <div>
-            <label>Contraseña</label>
+          <div style={{ textAlign: 'left' }}>
+            <label style={{ fontWeight: '700', color: '#111827' }}>
+              Contraseña
+            </label>
             <input
               type="password"
-              placeholder="Mínimo 8 caracteres"
+              placeholder="••••••••"
               style={inputStyle}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {/* CONFIRM PASSWORD */}
-          <div>
-            <label>Confirmar contraseña</label>
-            <input
-              type="password"
-              placeholder="Repite tu contraseña"
-              style={inputStyle}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-
-          <button type="submit" style={{
-            width: '100%',
-            padding: '15px',
-            backgroundColor: bluePrimary,
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            borderRadius: '14px',
-            border: 'none',
-            cursor: 'pointer',
-            marginTop: '10px',
-          }}>
-            Registrarse ahora
+          {/* BOTÓN */}
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '15px',
+              backgroundColor: bluePrimary,
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              borderRadius: '14px',
+              border: 'none',
+              cursor: 'pointer',
+              marginTop: '10px',
+              boxShadow: `0 10px 20px -5px rgba(37, 99, 235, 0.4)`
+            }}
+          >
+            Iniciar Sesión
           </button>
         </form>
 
-        <div style={{ marginTop: '25px', textAlign: 'center' }}>
-          <p>
-            ¿Ya tienes una cuenta?{' '}
-            <Link href="/login">Inicia sesión</Link>
+        {/* LINK */}
+        <div style={{ marginTop: '30px', textAlign: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '20px' }}>
+          <p style={{ fontSize: '14px', color: '#374151' }}>
+            ¿No tienes una cuenta?{' '}
+            <Link href="/register" style={{ color: bluePrimary, fontWeight: 'bold' }}>
+              Regístrate aquí
+            </Link>
           </p>
         </div>
+
       </div>
     </main>
   );
