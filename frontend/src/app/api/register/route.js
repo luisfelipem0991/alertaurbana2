@@ -1,5 +1,6 @@
 import pool from "@/lib/db";
 import bcrypt from "bcrypt";
+import { validateRegisterPayload } from "@/lib/validators";
 
 /**
  * @swagger
@@ -77,20 +78,16 @@ import bcrypt from "bcrypt";
  */
 export async function POST(req) {
   try {
-    const { name, email, password, confirmPassword } = await req.json();
+    const body = await req.json();
+    const { valid, errors } = validateRegisterPayload(body);
 
-    // Validar campos
-    if (!name || !email || !password || !confirmPassword) {
-      return Response.json({ error: "Campos obligatorios" }, { status: 400 });
+    if (!valid) {
+      return Response.json({ error: errors[0] }, { status: 400 });
     }
 
-    // Validar contraseñas
-    if (password !== confirmPassword) {
-      return Response.json(
-        { error: "Las contraseñas no coinciden" },
-        { status: 400 }
-      );
-    }
+    const name = body.name.trim();
+    const email = body.email.trim().toLowerCase();
+    const { password } = body;
 
     // Verificar si ya existe
     const userExists = await pool.query(
@@ -113,6 +110,11 @@ export async function POST(req) {
 
     return Response.json({ message: "Usuario creado correctamente" });
   } catch (error) {
+    // 🔎 LOG DEL ERROR REAL (antes esto no existía, por eso no veías nada)
+    console.error("REGISTER ERROR:");
+    console.error(error);
+    console.error(error?.stack);
+
     return Response.json({ error: "Error del servidor" }, { status: 500 });
   }
 }

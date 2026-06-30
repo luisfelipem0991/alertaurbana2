@@ -1,6 +1,7 @@
 import pool from "@/lib/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validateLoginPayload } from "@/lib/validators";
 
 /**
  * @swagger
@@ -77,10 +78,18 @@ import jwt from "jsonwebtoken";
  *                   example: Error del servidor
  */
 export async function POST(req) {
-    console.log("=== LOGIN API EJECUTADA ===");
+  console.log("=== LOGIN API EJECUTADA ===");
 
-    try {
-    const { email, password } = await req.json();
+  try {
+    const body = await req.json();
+    const { valid, errors } = validateLoginPayload(body);
+
+    if (!valid) {
+      return Response.json({ error: errors[0] }, { status: 400 });
+    }
+
+    const email = body.email.trim().toLowerCase();
+    const { password } = body;
 
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1",
@@ -101,7 +110,7 @@ export async function POST(req) {
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      "secreto_super_seguro",
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
@@ -111,15 +120,15 @@ export async function POST(req) {
       user: {
         id: user.id,
         name: user.name,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
 
     return Response.json(
-        { error: "Error del servidor" },
-        { status: 500 }
+      { error: "Error del servidor" },
+      { status: 500 }
     );
   }
 }

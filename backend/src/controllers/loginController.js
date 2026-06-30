@@ -1,10 +1,18 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "../config/db.js";
+import { validateLoginPayload } from "../utils/validators.js";
 
 export async function login(req, res) {
   try {
-    const { email, password } = req.body;
+    const { valid, errors } = validateLoginPayload(req.body);
+
+    if (!valid) {
+      return res.status(400).json({ error: errors[0] });
+    }
+
+    const email = req.body.email.trim().toLowerCase();
+    const { password } = req.body;
 
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1",

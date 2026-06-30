@@ -18,13 +18,3 @@ describe("Login Page", () => {
     ).toBeInTheDocument();
   });
 });
-import { render, screen } from "@testing-library/react";
-import LoginPage from "../app/login/page";
-
-describe("Login Page", () => {
-  test("renderiza el formulario", () => {
-    render(<LoginPage />);
-
-    expect(screen.getByRole("button")).toBeInTheDocument();
-  });
-});

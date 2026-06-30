@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const blueDark = "#1e3a8a"; 
   const bluePrimary = "#2563eb"; 
@@ -29,6 +30,14 @@ export default function RegisterPage() {
     fontSize: '16px',
     color: '#000000',
     transition: '0.3s',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    color: '#111827',
+    fontSize: '14px',
+    fontWeight: '600',
+    marginBottom: '6px',
   };
 
   // 🔐 REGISTRO (NUEVO)
@@ -62,10 +71,13 @@ export default function RegisterPage() {
         return;
       }
 
-      alert("Usuario registrado correctamente");
+      // ✅ Mostrar el modal en vez del alert()
+      setShowSuccess(true);
 
-      // 🔥 Redirige al login
-      router.push("/login");
+      // 🔥 Redirige al login automáticamente después de un momento
+      setTimeout(() => {
+        router.push("/login");
+      }, 2200);
 
     } catch (error) {
       alert("Error al registrar");
@@ -131,12 +143,24 @@ export default function RegisterPage() {
         {/* ✅ FORM CON LÓGICA */}
         <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           <style>{`
-            input::placeholder { color: #e3dede; opacity: 1; }
+            input::placeholder { color: #9ca3af; opacity: 1; }
+            @keyframes popIn {
+              0% { transform: scale(0.7); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes checkDraw {
+              0% { stroke-dashoffset: 40; }
+              100% { stroke-dashoffset: 0; }
+            }
+            @keyframes fadeIn {
+              0% { opacity: 0; }
+              100% { opacity: 1; }
+            }
           `}</style>
 
           {/* NOMBRE */}
           <div>
-            <label>Nombre completo</label>
+            <label style={labelStyle}>Nombre completo</label>
             <input
               type="text"
               placeholder="Ej: Pepito Pérez"
@@ -148,7 +172,7 @@ export default function RegisterPage() {
 
           {/* EMAIL */}
           <div>
-            <label>Correo electrónico</label>
+            <label style={labelStyle}>Correo electrónico</label>
             <input
               type="email"
               placeholder="pepito@ejemplo.com"
@@ -160,7 +184,7 @@ export default function RegisterPage() {
 
           {/* PASSWORD */}
           <div>
-            <label>Contraseña</label>
+            <label style={labelStyle}>Contraseña</label>
             <input
               type="password"
               placeholder="Mínimo 8 caracteres"
@@ -172,7 +196,7 @@ export default function RegisterPage() {
 
           {/* CONFIRM PASSWORD */}
           <div>
-            <label>Confirmar contraseña</label>
+            <label style={labelStyle}>Confirmar contraseña</label>
             <input
               type="password"
               placeholder="Repite tu contraseña"
@@ -199,12 +223,94 @@ export default function RegisterPage() {
         </form>
 
         <div style={{ marginTop: '25px', textAlign: 'center' }}>
-          <p>
+          <p style={{ fontSize: '14px', color: '#374151' }}>
             ¿Ya tienes una cuenta?{' '}
-            <Link href="/login">Inicia sesión</Link>
+            <Link href="/login" style={{ color: bluePrimary, fontWeight: 'bold' }}>
+              Inicia sesión
+            </Link>
           </p>
         </div>
       </div>
+
+      {/* 🎉 MODAL DE ÉXITO */}
+      {showSuccess && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.55)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            animation: 'fadeIn 0.25s ease-out',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '28px',
+              padding: '40px 32px',
+              width: '90%',
+              maxWidth: '360px',
+              textAlign: 'center',
+              boxShadow: '0 25px 60px -10px rgba(0, 0, 0, 0.45)',
+              animation: 'popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            <div
+              style={{
+                width: '84px',
+                height: '84px',
+                borderRadius: '50%',
+                backgroundColor: '#dcfce7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px',
+              }}
+            >
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 12.5L9.5 18L20 6"
+                  stroke="#16a34a"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeDasharray="40"
+                  style={{ animation: 'checkDraw 0.5s 0.2s ease-out forwards' }}
+                />
+              </svg>
+            </div>
+
+            <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#111827', margin: 0 }}>
+              ¡Cuenta creada!
+            </h2>
+            <p style={{ fontSize: '14px', color: '#4b5563', marginTop: '10px', lineHeight: '1.5' }}>
+              Tu registro fue exitoso. Te estamos llevando al inicio de sesión...
+            </p>
+
+            <button
+              onClick={() => router.push("/login")}
+              style={{
+                marginTop: '24px',
+                width: '100%',
+                padding: '13px',
+                backgroundColor: bluePrimary,
+                color: 'white',
+                fontSize: '15px',
+                fontWeight: 'bold',
+                borderRadius: '14px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Ir a iniciar sesión ahora
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

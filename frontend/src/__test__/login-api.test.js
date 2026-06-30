@@ -89,4 +89,29 @@ describe("Login API", () => {
     expect(data.token).toBe("token123");
     expect(data.message).toBe("Login exitoso");
   });
+
+  test("payload con campos extra es rechazado (simula petición manipulada)", async () => {
+    const req = {
+      json: async () => ({
+        email: "test@test.com",
+        password: "123",
+        role: "admin",
+      }),
+    };
+
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  test("email con formato inválido es rechazado", async () => {
+    const req = {
+      json: async () => ({
+        email: "no-es-un-correo",
+        password: "123",
+      }),
+    };
+
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
 });
