@@ -8,9 +8,11 @@ const SwaggerUI = dynamic(() => import("swagger-ui-react"), {
 });
 
 export default function ApiDocsPage() {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
   return (
     <main style={{ padding: "20px" }}>
-      <SwaggerUI url="/api/swagger" />
+      <SwaggerUI url={`${apiBaseUrl}/api/swagger`} />
     </main>
   );
 }

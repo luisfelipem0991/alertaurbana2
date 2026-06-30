@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
   const router = useRouter();
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   const [users, setUsers] = useState([]);
   const [huecos, setHuecos] = useState([]);
@@ -34,7 +35,7 @@ export default function AdminPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/users");
+      const res = await fetch(`${apiBaseUrl}/api/users`);
       const data = await res.json();
       setUsers(data);
     } catch (error) {
@@ -54,7 +55,7 @@ export default function AdminPage() {
 
   // ❌ ELIMINAR USUARIO
   const deleteUser = async (id) => {
-    await fetch(`/api/users/${id}`, {
+    await fetch(`${apiBaseUrl}/api/users/${id}`, {
       method: "DELETE",
     });
     fetchUsers();

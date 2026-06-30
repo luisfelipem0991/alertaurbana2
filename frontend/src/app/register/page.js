@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   // ✅ ESTADOS (NUEVO)
   const [name, setName] = useState("");
@@ -41,7 +42,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch(`${apiBaseUrl}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
