@@ -1,53 +1,5 @@
 import pool from "@/lib/db";
 
-/**
- * @swagger
- * /api/users/{id}:
- *   delete:
- *     summary: Eliminar un usuario por ID
- *     description: Elimina un usuario registrado en el sistema usando su identificador único.
- *     tags:
- *       - Usuarios
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID del usuario que se desea eliminar.
- *         schema:
- *           type: integer
- *         example: 1
- *     responses:
- *       200:
- *         description: Usuario eliminado correctamente.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Usuario eliminado
- *       404:
- *         description: No existe un usuario con el ID indicado.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Usuario no encontrado
- *       500:
- *         description: Error interno del servidor.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Error del servidor
- */
 export async function DELETE(req, { params }) {
   try {
     const { id } = params;

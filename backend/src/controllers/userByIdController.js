@@ -15,6 +15,10 @@ export async function deleteUserById(req, res) {
 
     return res.json({ message: "Usuario eliminado" });
   } catch (error) {
-    return res.status(500).json({ error: "Error del servidor" });
+  console.error(error);
+
+  return res.status(500).json({
+    error: "Error del servidor"
+  });
   }
 }

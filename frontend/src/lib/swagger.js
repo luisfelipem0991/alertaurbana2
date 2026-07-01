@@ -1,4 +1,12 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import swaggerJsdoc from "swagger-jsdoc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const backendRoutesGlob = path
+  .resolve(__dirname, "../../../backend/src/routes/**/*.js")
+  .replace(/\\/g, "/");
 
 const swaggerOptions = {
   definition: {
@@ -11,8 +19,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Servidor local"
+        url: "http://localhost:4000",
+        description: "Backend express"
       }
     ],
     components: {
@@ -88,9 +96,7 @@ const swaggerOptions = {
     }
   },
 
-  apis: [
-    "./src/app/api/**/*.js"
-  ]
+  apis: [backendRoutesGlob]
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
